@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/javascript.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="/static/images/logo.png" alt="logo">
+        <button onclick="back_button()">Back</button>
+    </div>
+    <div class="main-content">
+        <div class="profile-container">
+            <div class="title">
+                <h1>Professional</h1>
+            </div>
+            <div style="text-align: center;color: red;font-weight: 900;">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <b>{{message}}</b><br>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <div>
+                <h2 style="display: inline;">{{professional.name}}</h2><br><hr><br>
+                <div class="details">
+                    <div>
+                        <h4>Email: {{professional.email_id}}</h4>
+                        <h4>Phone: {{professional.phone_no}}</h4>
+                        <h4>Address: {{professional.address}}</h4>
+                        <h4>City: {{professional.city}}</h4>
+                        <h4>PIN Code: {{professional.pincode}}</h4>
+                    </div>
+                    <div>
+                        <h4>Service: {{professional.service.name}}</h4>
+                        <h4>Experience: {{professional.experience}} years</h4>
+                        <h4>Resume: <a href="/professional/resume/{{professional.professional_id}}">View</a></h4>
+                        <h4>Rating: {{'%.2f' % professional.rating}}<span style="color:darkorange;font-size: larger;">&#9733;</span></h4>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            <br><hr><br>
+            <h2 class="title">Service History</h2>
+            <table class="styled-table">
+                <tr>
+                    <th>ID</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+                {% for request in professional.requests %}
+                <tr>
+                    <td><a href="/service_request/{{request.request_id}}">{{request.request_id}}</a></td>
+                    <td>{{request.details.service.name}}</td>
+                    <td>{{request.details.request_date}}</td>
+                    <td>{{request.details.request_status}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <br><hr><br>
+            <h2 class="title">Feedback from Customers</h2>
+            <table class="styled-table">
+                <tr>
+                    <th>ID</th>
+                    <th>Customer ID</th>
+                    <th>Stars</th>
+                    <th>Comments</th>
+                </tr>
+                {% for rating in professional.ratings %}
+                <tr>
+                    <td><a href="/service_request/{{rating.rrequest_id}}">{{rating.rrequest_id}}</a></td>
+                    <td><a href="/professional/{{rating.rprofessional_id}}">{{rating.rcustomer_id}}</a></td>
+                    <td>{{rating.stars}}</td>
+                    <td>{{rating.comments}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>       
+</body>
+</html>

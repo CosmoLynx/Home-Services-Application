@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Signup</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/javascript.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="/static/images/logo.png" alt="logo">
+        <a href="/customer/login">Customer Login</a>
+        <a href="/professional/login">Professional Login</a>
+        <a href="/admin/login">Admin Login</a>
+    </div>
+
+    <div class="main-content">
+        <div class="title">
+            <h1>Customer Signup</h1>
+        </div>
+        <form action="/customer/sign_up" method="post" onsubmit="return signup_validation();">
+            <div style="text-align: center;color: red;font-weight: 900;">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <b>{{message}}</b><br>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <div class="details">
+                <div>
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" placeholder="Enter your address" required>
+                    <label for="city">City:</label>
+                    <input type="text" id="city" name="city" placeholder="Enter your city" required>
+                    <label for="pincode">Pincode:</label>
+                    <input type="number" id="pincode" name="pincode" placeholder="Enter pincode (6 digits)" required>
+                </div>
+                <div>
+                    <label for="phone_no">Contact No. :</label>
+                    <input type="number" id="phone_no" name="phone_no" placeholder="Enter phone no. (10 digits)" required>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Include upper, lower, special characters" required>
+                    <label for="confirm_password">Confirm Password:</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                </div>
+            </div>
+            <div style="display: flex;justify-content: center;">
+                <input type="submit" value="Sign Up" style="width: 30%;">
+            </div>
+            <div style="align-items: center;text-align: center;">
+                <a href="/customer/login" style="color: black;text-decoration:solid;">Already registered? Sign In</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

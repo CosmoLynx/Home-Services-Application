@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/javascript.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="/static/images/logo.png" alt="logo">
+        <a href="/customer/login">Customer Login</a>
+        <a href="/professional/login">Professional Login</a>
+        <a href="/admin/login">Admin Login</a>
+    </div>
+    <div class="main-content">
+        <div class="title">
+            <h1>Professional Login</h1>
+        </div>
+        
+        <form action="/professional/login" method="post" onsubmit="return valid_password()">
+            <div style="text-align: center;color: red;font-weight: 900;">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <b>{{message}}</b><br>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <label for="email">Username<span style="color: red;">*</span>:</label>
+            <input type="email" id="email" name="email" required placeholder="Your email_id">
+            
+            <label for="password">Password<span style="color: red;">*</span>:</label>
+            <input type="password" id="password" name="password" required placeholder="Your key to good vibes">
+            
+            <input type="submit" value="Login">
+            <div style="align-items: center;text-align: center;">
+                <a href="/professional/sign_up" style="color: black;text-decoration:solid;">New User? Sign Up</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

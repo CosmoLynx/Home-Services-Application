@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/javascript.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="/static/images/logo.png" alt="logo">
+        <button onclick="back_button()">Back</button>
+    </div>
+    <div class="main-content">
+        <div class="profile-container">
+            <div class="title">
+                <h1>Service</h1>
+            </div>
+            <div style="text-align: center;color: red;font-weight: 900;">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <b>{{message}}</b><br>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <div>
+                <h2 style="display: inline;">{{service.name}}</h2><br><hr><br>
+                <div class="details">
+                    <div>
+                        <h4>Description: {{service.description}}</h4>
+                        <h4>Base Price: {{service.base_price}} Rs</h4>
+                        <h4>Time Required: {{service.time_required}} hours</h4>
+                        <h4>Type: {{service.type}}</h4>
+                    </div>
+                </div>
+            </div>
+            <br><hr><br>
+            <h2 class="title">Professionals</h2>
+            <table class="styled-table">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Experience</th>
+                    <th>Rating</th>
+                </tr>
+                {% for professional in service.professionals %}
+                <tr>
+                    <td><a href="/professional/{{professional.professional_id}}">{{professional.professional_id}}</a></td>
+                    <td>{{professional.name}}</td>
+                    <td>{{professional.experience}}</td>
+                    <td>{{professional.rating}}<span style="color:darkorange;font-size: larger;">&#9733;</span></td>
+                </tr>
+                {% endfor %}
+            </table>
+            <br><hr><br>
+        </div>
+    </div>       
+</body>
+</html>

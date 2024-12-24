@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/javascript.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="/static/images/logo.png" alt="logo">
+        <a href="/professional/profile/{{professional.professional_id}}">Profile</a>
+        <a href="/professional/dashboard/{{professional.professional_id}}">Home</a>
+        <a href="/professional/search/{{professional.professional_id}}">Search</a>
+        <a href="/professional/summary/{{professional.professional_id}}">Summary</a>
+        <a href="/professional/logout/{{professional.professional_id}}">Log Out</a>
+    </div>
+    <div class="main-content">
+        {% if professional.status == 'under-verification' %}
+        <div class="title">
+            <h2>Verification in Progress</h2>
+        </div>
+        <hr><br>
+        <h3>Your profile in under-verification. You will be able to see service requests once your documents get verified.</h3>
+        {% elif professional.status == 'blocked' %}
+        <div class="title">
+            <h2>Blocked</h2>
+        </div>
+        <hr><br>
+        <h3>You have been blocked for poor reviews from customers or fraudlent activity. Please wait for action from our side.</h3>
+        {% else %}
+        <div class="title">
+            <h3>Welcome {{professional.name}}</h3>
+        </div>
+        <div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <h4 style="text-align: center;">{{message}}</h4><br>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        <br><br>
+        <h2>Service Requests</h2>
+        {%if pending_requests %}
+        <table class="styled-table">
+            <tr>
+                <th>ID</th>
+                <th>Service Name</th>
+                <th>Customer Name</th>
+                <th>Contact No.</th>
+                <th>Location</th>
+                <th>Service Date (Preferred)</th>
+                <th>Action</th>
+            </tr>
+            {% for request in pending_requests %}
+            <tr>
+                <td><a href="/service_request/{{request.request_id}}">{{request.request_id}}</a></td>
+                <td>{{request.details.service.name}}</td>
+                <td>{{request.details.customer.name}}</td>
+                <td>{{request.details.customer.phone_no}}</td>
+                <td>{{request.details.customer.address}}</td>
+                <td>{{request.details.request_date}}</td>
+                <td>
+                    <a href="/professional/acceptrequest/{{professional.professional_id}}?request_id={{request.request_id}}"><button class="btn-accept">Accept</button></a>
+                    <a href="/professional/rejectrequest/{{professional.professional_id}}?request_id={{request.request_id}}"><button class="btn-delete">Reject</button></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="details">
+            <h3>No service requests.</h3>
+        </div>
+        {% endif %}
+        <br><br>
+        <h2>Pending Work</h2>
+        {% if requests %}
+        <table class="styled-table">
+            <tr>
+                <th>ID</th>
+                <th>Service</th>
+                <th>Customer Name</th>
+                <th>Customer No.</th>
+                <th>Location</th>
+                <th>Service Date</th>
+            </tr>
+            {% for request in requests %}
+            <tr>
+                <td><a href="/service_request/{{request.request_id}}">{{request.request_id}}</a></td>
+                <td>{{request.details.service.name}}</td>
+                <td>{{request.details.customer.name}}</td>
+                <td>{{request.details.customer.phone_no}}</td>
+                <td>{{request.details.customer.address}}</td>
+                <td>{{request.details.request_date}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="details">
+            <h3>No Work Pending.</h3>
+        </div>
+        {% endif %}
+        <br><br>
+        <h2>Completed Work</h2>
+        {% if completed %}
+        <table class="styled-table">
+            <tr>
+                <th>ID</th>
+                <th>Service</th>
+                <th>Customer Name</th>
+                <th>Customer No.</th>
+                <th>Location</th>
+                <th>Service Date</th>
+                <th>Action</th>
+            </tr>
+            {% for request in completed %}
+            <tr request_id="{{request.request_id}}" customer_id="{{request.details.req_customer_id}}">
+                <td><a href="/service_request/{{request.request_id}}">{{request.request_id}}</a></td>
+                <td>{{request.details.service.name}}</td>
+                <td>{{request.details.customer.name}}</td>
+                <td>{{request.details.customer.phone_no}}</td>
+                <td>{{request.details.customer.address}}</td>
+                <td>{{request.details.request_date}}</td>
+                {% if request.details.request_status=='Completed' %}
+                <td><button class="btn-accept" onclick="close_request(this)">Close</button></td>
+                {% else %}
+                <td style="color: green;">Closed</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+        <div id="close_request">
+            <form action="/professional/closerequest/{{professional.professional_id}}" method="POST">
+                <div class="title">
+                    <h3>Feedback</h3>
+                </div>
+                <input type="hidden" name="request_id" id="request_id">
+                <input type="hidden" name="customer_id" id="customer_id">
+                <label for="rating">Rate Customer<span style="color: red;">*</span>:</label>
+                <div class="rating">
+                    <input type="radio" id="star5" name="rating" value="5">
+                    <label for="star5">&#9733;</label>
+                    <input type="radio" id="star4" name="rating" value="4">
+                    <label for="star4">&#9733;</label>
+                    <input type="radio" id="star3" name="rating" value="3">
+                    <label for="star3">&#9733;</label>
+                    <input type="radio" id="star2" name="rating" value="2">
+                    <label for="star2">&#9733;</label>
+                    <input type="radio" id="star1" name="rating" value="1">
+                    <label for="star1">&#9733;</label>
+                </div>
+                <label for="comments">Comments (if any) :</label>
+                <textarea name="comments" id="comments"></textarea>
+                <div style="display: flex;justify-content: center;">
+                    <input type="submit" value="Rate" style="width: 30%;">
+                    <button id="close" type="button" onclick="close_popup('close_request');" style="width: 30%;margin-left: 30px;">Cancel</button>
+                </div>
+            </form>
+        </div>
+        {% else %}
+        <div class="details">
+            <h3>No Completed Work.</h3>
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>

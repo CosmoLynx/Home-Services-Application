@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/javascript.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="/static/images/logo.png" alt="logo">
+        <a href="/customer/profile/{{customer.customer_id}}">Profile</a>
+        <a href="/customer/dashboard/{{customer.customer_id}}">Home</a>
+        <a href="/customer/search/{{customer.customer_id}}">Search</a>
+        <a href="/customer/summary/{{customer.customer_id}}">Summary</a>
+        <a href="/customer/logout/{{customer.customer_id}}">Log Out</a>
+    </div>
+    <div class="main-content">
+        {% if customer.status=='blocked' %}
+        <div class="title">
+            <h2>Blocked</h2>
+        </div>
+        <hr><br>
+        <h3>You have been blocked for poor reviews from customers or fraudlent activity. Please wait for action from our side.</h3>
+        {% else %}
+        <div class="title">
+            <h3>Welcome {{customer.name}}</h3>
+        </div>
+        <div class="services">
+            <h2>Looking For?</h2>
+            <div>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <h4 style="text-align: center;">{{message}}</h4><br>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <div class="looking-for-section">
+                <div class="service-box" style="background-image: url('/static/images/cleaning.jpg');">
+                    <a href="/customer/bookservice/{{customer.customer_id}}?type=Cleaning" style="text-decoration: none;color: #fff;">Cleaning</a>
+                </div>
+                <div class="service-box" style="background-image: url('/static/images/plumbing.jpg');">
+                    <a href="/customer/bookservice/{{customer.customer_id}}?type=Plumbing" style="text-decoration: none;color: #fff;">Plumbing</a>
+                </div>
+                <div class="service-box" style="background-image: url('/static/images/electrical.jpg');">
+                    <a href="/customer/bookservice/{{customer.customer_id}}?type=Electrical" style="text-decoration: none;color: #fff;">Electrical</a>
+                </div>
+                <div class="service-box" style="background-image: url('/static/images/salon.jpg');">
+                    <a href="/customer/bookservice/{{customer.customer_id}}?type=Salon" style="text-decoration: none;color: #fff;">Salon</a>
+                </div>
+                <div class="service-box" style="background-image: url('/static/images/pestcontrol.jpg');">
+                    <a href="/customer/bookservice/{{customer.customer_id}}?type=PestControl" style="text-decoration: none;color: #fff;">Pest Control</a>
+                </div>
+                <div class="service-box" style="background-image: url('/static/images/carpentry.jpg');">
+                    <a href="/customer/bookservice/{{customer.customer_id}}?type=Carpentry" style="text-decoration: none;color: #fff;">Carpentry</a>
+                </div>
+                <div class="service-box" style="background-image: url('/static/images/gardening.jpg');">
+                    <a href="/customer/bookservice/{{customer.customer_id}}?type=Gardening" style="text-decoration: none;color: #fff;">Gardening</a>
+                </div>
+                <div class="service-box" style="background-image: url('/static/images/renovation.jpg');">
+                    <a href="/customer/bookservice/{{customer.customer_id}}?type=Renovation" style="text-decoration: none;color: #fff;">Renovation</a>
+                </div>
+                <div class="service-box" style="background-image: url('/static/images/moving.jpg');">
+                    <a href="/customer/bookservice/{{customer.customer_id}}?type=Moving" style="text-decoration: none;color: #fff;">Moving</a>
+                </div>
+                <div class="service-box" style="background-image: url('/static/images/homesecurity.jpg');">
+                    <a href="/customer/bookservice/{{customer.customer_id}}?type=HomeSecurity" style="text-decoration: none;color: #fff;">Home Security</a>
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <h2>Pending Requests</h2>
+        {%if pending_requests %}
+        <table class="styled-table">
+            <tr>
+                <th>ID</th>
+                <th>Service Name</th>
+                <th>Description</th>
+                <th>Preferred Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            {% for request in pending_requests %}
+            <tr>
+                <td><a href="/service_request/{{request.request_id}}">{{request.request_id}}</a></td>
+                <td>{{request.service.name}}</td>
+                <td>{{request.service.description}}</td>
+                <td>{{request.request_date}}</td>
+                {% if request.prof_details %}
+                <td style="color: #f39c12;">{{request.request_status}}</td>
+                <td>
+                    <a href="/customer/cancelrequest/{{customer.customer_id}}?request_id={{request.request_id}}"><button class="btn-delete">Cancel</button></a>
+                </td>
+                {% else %}
+                <td style="color: red;">Currently Unavailable</td>
+                <td>
+                    <a href="/customer/cancelrequest/{{customer.customer_id}}?request_id={{request.request_id}}"><button class="btn-delete">Close</button></a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="details">
+            <h3>No pending Requests</h3>
+        </div>
+        {% endif %}
+        <br><br>
+        <h2>Services In Progress</h2>
+        {% if requests %}
+        <table class="styled-table">
+            <tr>
+                <th>ID</th>
+                <th>Service Name</th>
+                <th>Description</th>
+                <th>Professional Name</th>
+                <th>Contact No.</th>
+                <th>Preferred Date</th>
+                <th>Actions</th>
+            </tr>
+            {% for request in requests %}
+            <tr request_id="{{request.request_id}}" professional_id="{{request.prof_details[0].professional_id}}">
+                <td><a href="/service_request/{{request.request_id}}">{{request.request_id}}</a></td>
+                <td>{{request.service.name}}</td>
+                <td>{{request.service.description}}</td>
+                <td>{{request.prof_details[0].professional.name}}</td>
+                <td>{{request.prof_details[0].professional.phone_no}}</td>
+                <td>{{request.request_date}}</td>
+                <td>
+                    <button class="btn-accept" onclick="complete_request(this)">Mark as Done</button>
+                    <button class="btn-update" onclick="edit_request(this)">Edit Date</button>
+                    <a href="/customer/cancelrequest/{{customer.customer_id}}?request_id={{request.request_id}}"><button class="btn-delete">Cancel</button></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div id="add_service">
+            <form action="/customer/editrequest/{{customer.customer_id}}" method="POST">
+                <div class="title">
+                    <h3>Edit Preference:</h3>
+                </div>
+                <input type="hidden" name="request_id" id="request_id" required>
+                <div style="display: flex;justify-content: center;">
+                    <div style="display: flex;justify-content: center;flex-direction: column;">
+                        <label for="request_date" style="margin-right: 10px;">Select another date for service :</label>
+                        <input type="date" name="request_date" id="request_date" value='{{request.request_date}}'required>
+                    </div>
+                </div>
+                <div style="display: flex;justify-content: center;">
+                    <input type="submit" value="Book" style="width: 30%;">
+                    <button id="close" onclick="close_popup('add_service');" style="width: 30%;margin-left: 30px;">Cancel</button>
+                </div>
+            </form>
+        </div>
+        <div id="complete_request">
+            <form action="/customer/completerequest/{{customer.customer_id}}" method="POST">
+                <div class="title">
+                    <h3>Feedback</h3>
+                </div>
+                <input type="hidden" name="rrequest_id" id="rrequest_id" required>
+                <input type="hidden" name="professional_id" id="professional_id" required>
+                <label for="rating">Rate Professional<span style="color: red;">*</span>:</label>
+                <div class="rating">
+                    <input type="radio" id="star5" name="rating" value="5">
+                    <label for="star5">&#9733;</label>
+                    <input type="radio" id="star4" name="rating" value="4">
+                    <label for="star4">&#9733;</label>
+                    <input type="radio" id="star3" name="rating" value="3">
+                    <label for="star3">&#9733;</label>
+                    <input type="radio" id="star2" name="rating" value="2">
+                    <label for="star2">&#9733;</label>
+                    <input type="radio" id="star1" name="rating" value="1">
+                    <label for="star1">&#9733;</label>
+                </div>
+                <label for="comments">Comments (if any) :</label>
+                <textarea name="comments" id="comments"></textarea>
+                <div style="display: flex;justify-content: center;">
+                    <input type="submit" value="Rate" style="width: 30%;">
+                    <button id="close" type="button" onclick="close_popup('complete_request');" style="width: 30%;margin-left: 30px;">Cancel</button>
+                </div>
+            </form>
+        </div>
+        {% else %}
+        <div class="details">
+            <h3>No Services in Progress.</h3>
+        </div>
+        {% endif %}
+        <br><br>
+        <h2>Completed Services</h2>
+        {% if completed %}
+        <table class="styled-table">
+            <tr>
+                <th>ID</th>
+                <th>Service Name</th>
+                <th>Description</th>
+                <th>Professional Name</th>
+                <th>Contact No.</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+            {% for request in completed %}
+            <tr request_id="{{request.request_id}}" professional_id="{{request.prof_details[0].professional_id}}">
+                <td><a href="/service_request/{{request.request_id}}">{{request.request_id}}</a></td>
+                <td>{{request.service.name}}</td>
+                <td>{{request.service.description}}</td>
+                <td>{{request.prof_details[0].professional.name}}</td>
+                <td>{{request.prof_details[0].professional.phone_no}}</td>
+                <td>{{request.request_date}}</td>
+                {% if request.request_status=='Completed' %}
+                <td style="color:blue">Completed</td>
+                {% elif request.request_status=='Closed' %}
+                <td style="color: green;">Closed</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="details">
+            <h3>No Completed Services.</h3>
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>

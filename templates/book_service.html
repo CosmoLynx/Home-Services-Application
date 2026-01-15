@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/javascript.js"></script>
+    <title>Book Service</title>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="/static/images/logo.png" alt="logo">
+        <a href="/customer/dashboard/{{customer.customer_id}}">Back</a>
+    </div>
+    <div class="main-content">
+        <div class="title">
+            <h1>Best {{service_type}} Packages</h1>
+        </div>
+        <div>
+            {% if services %}
+            <table class="styled-table">
+                <tr>
+                    <th colspan="6"><h2>Services</h2></th>
+                </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Base Price</th>
+                    <th>Time(in hrs.)</th>
+                    <th>Action</th>
+                </tr>
+                {% for service in services %}
+                <tr service_id="{{service.service_id}}">
+                    <td><a href="/service/{{service.service_id}}">{{service.service_id}}</a></td>
+                    <td>{{service.name}}</td>
+                    <td>{{service.description}}</td>
+                    <td>{{service.base_price}}</td>
+                    <td>{{service.time_required}}</td>
+                    <td><button class="btn-accept" onclick="book_service(this);">Book</button></td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <hr>
+            <div class="details">
+                <h3>Sorry, can't find services for you at the moment.</h3>
+            </div>
+            <hr>
+            {% endif %}
+            <div id="add_service">
+                <form action="/customer/bookservice/{{customer.customer_id}}" method="POST">
+                    <input type="hidden" name="service_id" id="service_id" required>
+                    <div style="display: flex;justify-content: center;">
+                        <label for="request_date" style="margin-right: 10px;">Select Date</label>
+                        <input type="date" name="request_date" id="request_date" required>
+                    </div>
+                    <div style="display: flex;justify-content: center;">
+                        <input type="submit" value="Book" style="width: 30%;">
+                        <button id="close" onclick="close_popup('add_service');" style="width: 30%;margin-left: 30px;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

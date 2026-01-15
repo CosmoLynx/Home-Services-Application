@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Signup</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/javascript.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="/static/images/logo.png" alt="logo">
+        <a href="/customer/login">Customer Login</a>
+        <a href="/professional/login">Professional Login</a>
+        <a href="/admin/login">Admin Login</a>
+    </div>
+    <div class="main-content">
+        <div class="title">
+            <h1>Professional Signup</h1>
+        </div>
+        <form action="/professional/sign_up" method="GET" style="margin-bottom: 10px;">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <h4 style="text-align: center;">{{message}}</h4><br>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <h3>Search For Services :</h3>
+            <div class="details">
+                <div>
+                    <select name="type" id="type">
+                        <option value="">None</option>
+                        <option value="Cleaning">Cleaning</option>
+                        <option value="Plumbing">Plumbing</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="PestControl">Pest Control</option>
+                        <option value="Carpentry">Carpentry</option>
+                        <option value="Gardening">Gardening</option>
+                        <option value="Painting">Painting</option>
+                        <option value="HomeSecurity">Home Security</option>
+                        <option value="Renovation">Renovation</option>
+                        <option value="Moving">Moving</option>
+                    </select>
+                </div>
+                <div style="display: flex;justify-content: center;">
+                    <input type="submit" value="Search" style="width: 50%;">
+                </div>
+            </div>
+        </form>
+        {% if services %}
+        <form action="/professional/sign_up" method="post" enctype="multipart/form-data" onsubmit="return signup_validation();">
+            <h3>Professional Details :-</h3>
+            <div class="details">
+                <div>
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+
+                    <label for="city">City:</label>
+                    <input type="text" id="city" name="city" placeholder="Enter your city" required>
+                    
+                    <label for="pincode">Pincode:</label>
+                    <input type="number" id="pincode" name="pincode" placeholder="Enter pincode (6 digits)" required>
+                    
+                    <label for="phone_no">Contact No. :</label>
+                    <input type="number" id="phone_no" name="phone_no" placeholder="Enter phone no. (10 digits)" required>
+                </div>
+                <div>
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" placeholder="Enter your address" required>
+
+                    <label for="service_id">Service Provided:</label>
+                    <button id="add-btn" onclick="open_popup('add_service');">Add Service</button>
+                    <input type="hidden" name="service_id" id="service_id">
+                    
+                    <label for="experience">Years of Experience:</label>
+                    <input type="number" id="experience" name="experience" placeholder="Enter your experience" required>
+
+                    <label for="resume" style="display: inline-block;">Upload Resume:</label><span style="font-size: small"> (file format: .pdf, max-size: 1MB)</span>
+                    <input type="file" id="resume" name="resume" accept="application/pdf" required>
+                </div>
+            </div>
+            <div id="add_service" style="width:800px;transform: translate(-71%,-120%);">
+                <table class="styled-table" style="width:fit-content">
+                    <tr>
+                        <th colspan="6"><h2>Services</h2></th>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Base Price</th>
+                        <th>Time(in hrs.)</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for service in services %}
+                    <tr service_id="{{service.service_id}}">
+                        <td>{{loop.index}}</td>
+                        <td>{{service.name}}</td>
+                        <td>{{service.description}}</td>
+                        <td>{{service.base_price}}</td>
+                        <td>{{service.time_required}}</td>
+                        <td>
+                            <button class="btn-accept" onclick="add_service(this);">Add</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <h3>Login Details:- </h3>
+            <div class="details">
+                <div>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+                    <label for="confirm_password">Confirm Password:</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                </div>
+            </div>
+
+            <div style="display: flex;justify-content: center;">
+                <input type="submit" value="Sign Up" style="width: 30%;">
+            </div>
+            <div style="display: flex;justify-content: center;">
+                <a href="/professional/login" style="color: black;text-decoration:solid;margin-right: 10px;">Already Registered? Sign In</a>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</body>
+</html>

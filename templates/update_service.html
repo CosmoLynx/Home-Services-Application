@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Service</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <img src="/static/images/logo.png" alt="logo">
+        <a href="/admin/dashboard/1">Back</a>
+    </div>
+    <div class="main-content">
+        <div class="title">
+            <h1>Update Service</h1>
+        </div>
+        <form action="/admin/updateservice/{{admin.admin_id}}?service_id={{service.service_id}}" method="POST">
+            <div class="details">
+                <div>
+                    <label for="service_id">Service ID :</label>
+                    <input type="text" name="service_id" id="service_id" value="{{service.service_id}}" disabled>
+                    <label for="name">Service Name :</label>
+                    <input type="text" id="name" name="name" value="{{service.name}}" required>
+                    <label for="description">Description :</label>
+                    <input type="text" id="description" name="description" value="{{service.description}}" required>
+                    <label for="base_price">Set Price :</label>
+                    <input type="number" id="base_price" name="base_price" value="{{service.base_price}}" required>
+                    <label for="time_required">Time required :</label>
+                    <input type="number" id="time_required" name="time_required" value="{{service.time_required}}" required>
+                    <label for="type">Service Type :</label>
+                    <select name="type" id="type">
+                        <option value="Cleaning">Cleaning</option>
+                        <option value="Plumbing">Plumbing</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Pest Control">Pest Control</option>
+                        <option value="Carpentry">Carpentry</option>
+                        <option value="Gardening">Gardening</option>
+                        <option value="Salon">Salon</option>
+                        <option value="Home Security">Home Security</option>
+                        <option value="Renovation">Renovation</option>
+                        <option value="Moving">Moving</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: flex;justify-content: center;">
+                <input type="submit" value="Add" style="width: 30%;">
+            </div>
+        </form>
+    </div>
+</body>
+</html>

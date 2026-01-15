@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/javascript.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="/static/images/logo.png" alt="logo">
+        <a href="/admin/dashboard/{{admin.admin_id}}">Home</a>
+        <a href="/admin/search/{{admin.admin_id}}">Search</a>
+        <a href="/admin/summary/{{admin.admin_id}}">Summary</a>
+        <a href="/admin/logout/{{admin.admin_id}}">Log Out</a>
+    </div>
+    <div class="main-content">
+        <div class="title">
+            <h3>Welcome {{admin.name}}</h3>
+        </div>
+        <div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <h4 style="text-align: center;">{{message}}</h4><br>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        <div>
+            <button onclick="open_popup('deleteall')" class="btn-delete">Delete All Services</button>
+            <div id="deleteall" style="display: none;">
+                <form action="/admin/{{admin.admin_id}}/deleteall" method="post">
+                    <label for="sub">Do you want to delete all services?</label>
+                    <div style="display:flex; justify-content: center;">
+                        <input type="submit" value="Confirm" style="width: 30%;" >
+                        <button type="button" id="close" onclick="close_popup('deleteall');" style="width: 30%;margin-left: 30px;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div>
+            <table class="styled-table">
+                <tr>
+                    <th colspan="7"><h2>Services</h2></th>
+                </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Base Price</th>
+                    <th>Time Required</th>
+                    <th>Action</th>
+                </tr>
+                {% for service in services %}
+                <tr service_id="{{service.service_id}}">
+                    <td><a href="/service/{{service.service_id}}">{{service.service_id}}</a></td>
+                    <td>{{service.name}}</td>
+                    <td>{{service.type}}</td>
+                    <td>{{service.description}}</td>
+                    <td>{{service.base_price}}</td>
+                    <td>{{service.time_required}}</td>
+                    <td>
+                        <a href="/admin/updateservice/{{admin.admin_id}}?service_id={{service.service_id}}"><button class="btn-update">Update</button></a>
+                        <a href="/admin/deleteservice/{{admin.admin_id}}?service_id={{service.service_id}}"><button class="btn-delete">Delete</button></a>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <th colspan="7">
+                        <a href="javascript:void(0);" style="text-decoration: none;color: black;" onclick="open_popup('add_service');">
+                            Add Service
+                            <div class="plus-icon">
+                                <span style="color: white;font-size: large;">+</span>
+                            </div>
+                        </a>
+                    </th>
+                </tr>
+            </table>
+        </div>
+        <div id="add_service" style="transform: translate(-50%,-30%);">
+            <form action="/admin/addservice/{{admin.admin_id}}" method="POST" enctype="multipart/form-data">
+                <h3>Add New Service</h3>
+                <div class="details">
+                    <div>
+                        <label for="name">Service Name :</label>
+                        <input type="text" id="name" name="name" placeholder="name of service" required>
+                        <label for="description">Description :</label>
+                        <input type="text" id="description" name="description" placeholder="describe your product" required>
+                        <label for="base_price">Set Price :</label>
+                        <input type="number" id="base_price" name="base_price" placeholder="enter starting price" required>
+                        <label for="time_required">Time required :</label>
+                        <input type="number" id="time_required" name="time_required" placeholder="required time (in hrs.)" required>
+                        <label for="type">Service Type :</label>
+                        <select name="type" id="type">
+                            <option value="Cleaning">Cleaning</option>
+                            <option value="Plumbing">Plumbing</option>
+                            <option value="Electrical">Electrical</option>
+                            <option value="PestControl">Pest Control</option>
+                            <option value="Carpentry">Carpentry</option>
+                            <option value="Gardening">Gardening</option>
+                            <option value="Salon">Salon</option>
+                            <option value="HomeSecurity">Home Security</option>
+                            <option value="Renovation">Renovation</option>
+                            <option value="Moving">Moving</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex;justify-content: center;">
+                    <input type="submit" value="Add" style="width: 30%;">
+                    <button id="close" onclick="close_popup('add_service');" style="width: 30%;margin-left: 30px;">Cancel</button>
+                </div>
+            </form>
+        </div>
+        <div>
+            <table class="styled-table">
+                <tr>
+                    <th colspan="8"><h2>Professionals</h2></th>
+                </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Service</th>
+                    <th>City</th>
+                    <th>Status</th>
+                    <th>Rating</th>
+                    <th>Resume</th>
+                    <th>Action</th>
+                </tr>
+                {% for professional in professionals %}
+                <tr>
+                    <td><a href="/professional/{{professional.professional_id}}">{{professional.professional_id}}</a></td>
+                    <td>{{professional.name}}</td>
+                    <td>{{professional.service.name}}</td>
+                    <td>{{professional.city}}</td>
+                    <td>{{professional.status}}</td>
+                    <td>{{ '%.2f' % professional.rating}}<span style="color:darkorange;font-size: larger;">&#9733;</span></td>
+                    <td><a href="/admin/professional/resume/{{admin.admin_id}}?professional_id={{professional.professional_id}}" style="color: rgb(121, 121, 255);">View resume</a></td>
+                    {% if professional.status=='under-verification' %}
+                    <td>
+                        <a href="/admin/professional/status/{{admin.admin_id}}?professional_id={{professional.professional_id}}&status=active"><button class="btn-accept">Approve</button></a>
+                        <a href="/admin/professional/status/{{admin.admin_id}}?professional_id={{professional.professional_id}}&status=blocked"><button class="btn-update">&ensp;Block&ensp;</button></a>
+                        <a href="/admin/deleteprofessional/{{admin.admin_id}}?professional_id={{professional.professional_id}}"><button class="btn-delete">Remove</button></a> 
+                    </td>
+                    {% elif professional.status=='active' %}
+                    <td>
+                        <a href="/admin/professional/status/{{admin.admin_id}}?professional_id={{professional.professional_id}}&status=blocked"><button class="btn-update">&ensp;Block&ensp;</button></a>
+                        <a href="/admin/deleteprofessional/{{admin.admin_id}}?professional_id={{professional.professional_id}}"><button class="btn-delete">Remove</button></a>
+                    </td>
+                    {% elif professional.status=='blocked' %}
+                    <td>
+                        <a href="/admin/professional/status/{{admin.admin_id}}?professional_id={{professional.professional_id}}&status=active"><button class="btn-accept">Unblock</button></a>
+                        <a href="/admin/deleteprofessional/{{admin.admin_id}}?professional_id={{professional.professional_id}}"><button class="btn-delete">Remove</button></a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div>
+            <table class="styled-table">
+                <tr>
+                    <th colspan="7">
+                        <h2>Customers</h2>
+                    </th>
+                </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Contact No.</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Rating</th>
+                    <th>Action</th>
+                </tr>
+                {% for customer in customers %}
+                <tr>
+                    <td><a href="/customer/{{customer.customer_id}}">{{customer.customer_id}}</a></td>
+                    <td>{{customer.name}}</td>
+                    <td>{{customer.phone_no}}</td>
+                    <td>{{customer.address}}</td>
+                    <td>{{customer.status}}</td>
+                    <td>{{ '%.2f' % customer.rating}}<span style="color:darkorange;font-size: larger;">&#9733;</span></td>
+                    {% if customer.status=='active' %}
+                    <td>
+                        <a href="/admin/customer/status/{{admin.admin_id}}?customer_id={{customer.customer_id}}&status=blocked"><button class="btn-update">&ensp;Block&ensp;</button></a>
+                        <a href="/admin/deletecustomer/{{admin.admin_id}}?customer_id={{customer.customer_id}}"><button class="btn-delete">Remove</button></a>
+                    </td>
+                    {% elif customer.status=='blocked' %}
+                    <td>
+                        <a href="/admin/customer/status/{{admin.admin_id}}?customer_id={{customer.customer_id}}&status=active"><button class="btn-accept">Unblock</button></a>
+                        <a href="/admin/deletecustomer/{{admin.admin_id}}?customer_id={{customer.customer_id}}"><button class="btn-delete">Remove</button></a></button>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+</html>

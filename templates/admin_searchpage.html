@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Search</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/javascript.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="/static/images/logo.png" alt="logo">
+        <a href="/admin/dashboard/{{admin.admin_id}}">Home</a>
+        <a href="/admin/search/{{admin.admin_id}}">Search</a>
+        <a href="/admin/summary/{{admin.admin_id}}">Summary</a>
+        <a href="/admin/logout/{{admin.admin_id}}">Log Out</a>
+    </div>
+    <div class="main-content">
+        <div class="title">
+            <h1>Search For Services/Professionals</h1>
+        </div>
+        <form action="/admin/search/{{admin.admin_id}}" method="GET">
+            <div style="display: flex;gap: 25px;">
+                <label for="term" style="display: inline;padding-top: 12px;">Search For :</label>
+                <select name="term" id="term" style="width: 295px;margin-top: 0px;">
+                    <option value="None">None</option>
+                    <option value="Professionals">Professionals</option>
+                    <option value="Services">Services</option>
+                </select>
+                <label for="filter" style="display: inline;padding-top: 12px;">Filter By :</label>
+                <select name="filter" id="filter" style="width: 295px;margin-top: 0px;">
+                    <option value="none">None</option>
+                    <option value="name">Service Name</option>
+                    <option value="city">City</option>
+                    <option value="pincode">Pin Code</option>
+                </select>
+            </div>
+            <div style="display: flex;justify-content: center;gap: 25px;">
+            <input type="text" name="search" id="search" placeholder="Enter Text Here">
+            <input type="submit" value="Search" style="margin-top: 12px; width: 30%;">
+            </div>
+        </form>
+        <div>
+            {% if fields %}
+            <table class="styled-table">
+                {% if term=='Services' %}
+                <tr>
+                    <th colspan="7"><h2>Services</h2></th>
+                </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Base Price</th>
+                    <th>Time Required</th>
+                    <th>Action</th>
+                </tr>
+                {% for service in fields %}
+                <tr service_id="{{service.service_id}}">
+                    <td><a href="/service/{{service.service_id}}">{{service.service_id}}</a></td>
+                    <td>{{service.name}}</td>
+                    <td>{{service.type}}</td>
+                    <td>{{service.description}}</td>
+                    <td>{{service.base_price}}</td>
+                    <td>{{service.time_required}}</td>
+                    <td>
+                        <a href="/admin/updateservice/{{admin.admin_id}}?service_id={{service.service_id}}"><button class="btn-update">Update</button></a>
+                        <a href="/admin/deleteservice/{{admin.admin_id}}?service_id={{service.service_id}}"><button class="btn-delete">Delete</button></a>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% elif term=='Professionals' %}
+                <tr>
+                    <th colspan="8"><h2>Professionals</h2></th>
+                </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Service</th>
+                    <th>City</th>
+                    <th>Status</th>
+                    <th>Rating</th>
+                    <th>Resume</th>
+                    <th>Action</th>
+                </tr>
+                {% for professional in fields %}
+                <tr>
+                    <td><a href="/professional/{{professional.professional_id}}">{{professional.professional_id}}</a></td>
+                    <td>{{professional.name}}</td>
+                    <td>{{professional.service.name}}</td>
+                    <td>{{professional.city}}</td>
+                    <td>{{professional.status}}</td>
+                    <td>{{ '%.2f' % professional.rating}}<span style="color:darkorange;font-size: larger;">&#9733;</span></td>
+                    <td><a href="/admin/professional/resume/{{admin.admin_id}}?professional_id={{professional.professional_id}}" style="color: rgb(121, 121, 255);">View resume</a></td>
+                    {% if professional.status=='under-verification' %}
+                    <td>
+                        <a href="/admin/professional/status/{{admin.admin_id}}?professional_id={{professional.professional_id}}&status=active"><button class="btn-accept">Approve</button></a>
+                        <a href="/admin/professional/status/{{admin.admin_id}}?professional_id={{professional.professional_id}}&status=blocked"><button class="btn-update">&ensp;Block&ensp;</button></a>
+                        <a href="/admin/deleteprofessional/{{admin.admin_id}}?professional_id={{professional.professional_id}}"><button class="btn-delete">Remove</button></a> 
+                    </td>
+                    {% elif professional.status=='active' %}
+                    <td>
+                        <a href="/admin/professional/status/{{admin.admin_id}}?professional_id={{professional.professional_id}}&status=blocked"><button class="btn-update">&ensp;Block&ensp;</button></a>
+                        <a href="/admin/deleteprofessional/{{admin.admin_id}}?professional_id={{professional.professional_id}}"><button class="btn-delete">Remove</button></a>
+                    </td>
+                    {% elif professional.status=='blocked' %}
+                    <td>
+                        <a href="/admin/professional/status/{{admin.admin_id}}?professional_id={{professional.professional_id}}&status=active"><button class="btn-accept">Unblock</button></a>
+                        <a href="/admin/deleteprofessional/{{admin.admin_id}}?professional_id={{professional.professional_id}}"><button class="btn-delete">Remove</button></a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </table>
+            {% else %}
+            <br><br>
+            <hr>
+            <div class="details">
+                <h3>No results available.</h3>
+            </div>
+            <div>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <h4 style="text-align: center;">{{message}}</h4><br>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <hr>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
